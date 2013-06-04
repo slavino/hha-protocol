@@ -19,3 +19,9 @@ https://github.com/una1veritas/Arduino.git \libraries\AES128
 
 Mirf
 https://github.com/aaronds/arduino-nrf24l01.git
+
+Hardware
+NRF24L01+ 2.4GHz (U$D 1.7 - 2.0 on ebay.com)
+Arduino compatible board (in my case Arduino Nano v3 - max. U$D 10 on ebay.com)
+
+Use Fritzing for *.fzz (http://fritzing.org/) 
