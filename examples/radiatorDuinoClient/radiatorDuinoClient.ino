@@ -38,7 +38,7 @@ void setup(){
   Mirf.init();
   
   Mirf.setRADDR((byte *)"clie1");
-  Mirf.payload = 32;//sizeof(unsigned long);
+  Mirf.payload = 32;
   
   Mirf.channel = 10;
   

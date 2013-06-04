@@ -48,7 +48,7 @@ void HHAProtocol::setRecipientAddr(byte addr[]) {
 	this->_packet[1] = addr[1];
 	
 	if(this->hhaProtocol_DEBUG) {
-		Serial.print("HHAProtocol::setRecipientAddr(): [");
+		Serial.print("HHAProtocol::setRecipientAddr(addr): [");
 		Serial.print(this->_packet[0], HEX);
 		Serial.print(",");
 		Serial.print(this->_packet[1], HEX);
@@ -56,17 +56,48 @@ void HHAProtocol::setRecipientAddr(byte addr[]) {
 	}
 }
 
+byte* HHAProtocol::getRecipientAddr() {
+	byte recipient[2] = {0x00, 0x00};
+	recipient[0] = this->_packet[0];
+	recipient[1] = this->_packet[1];
+
+	if(this->hhaProtocol_DEBUG) {
+		Serial.print("HHAProtocol::getRecipientAddr(): [");
+		Serial.print(recipient[0], HEX);
+		Serial.print(",");
+		Serial.print(recipient[1], HEX);
+		Serial.println("]");
+	}
+	return (byte *)&recipient;
+}
+
 void HHAProtocol::setSenderAddr(byte addr[]) {
 	this->_packet[2] = addr[0];
 	this->_packet[3] = addr[1];
 	
 	if(this->hhaProtocol_DEBUG) {
-		Serial.print("HHAProtocol::setSenderAddr(): [");
+		Serial.print("HHAProtocol::setSenderAddr(addr): [");
 		Serial.print(this->_packet[2], HEX);
 		Serial.print(",");
 		Serial.print(this->_packet[3], HEX);
 		Serial.println("]");
 	}
+}
+
+byte* HHAProtocol::getSenderAddr() {
+	byte sender[2] = {0x00, 0x00};
+	sender[0] = this->_packet[2];
+	sender[1] = this->_packet[3];
+
+	if(this->hhaProtocol_DEBUG) {
+		Serial.print("HHAProtocol::getSenderAddr(): [");
+		Serial.print(sender[0], HEX);
+		Serial.print(",");
+		Serial.print(sender[1], HEX);
+		Serial.println("]");
+	}
+
+	return (byte *)&sender;
 }
 
 void HHAProtocol::setDebug(boolean debugState) {
@@ -129,7 +160,6 @@ void HHAProtocol::setInformation(byte information[]) {
 		Serial.println("]");
 	}
 
-	//aes.encrypt(information);
 	for(int i = 16 ; i < PACKET_SIZE ; i++ ) {
 		this->_packet[i] = information[i-16];
 	}
@@ -157,7 +187,6 @@ void HHAProtocol::parse(byte *data) {
 		Serial.println("]");
 	}
 
-	//memcpy((void *)this->_packet, (const void *)data, PACKET_SIZE);
 	for(int i = 0 ; i < PACKET_SIZE ; i++) {
 		this->_packet[i] = data[i];
 	}

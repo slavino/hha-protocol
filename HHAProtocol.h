@@ -67,6 +67,7 @@ class HHAProtocol {
 		void setTTL(byte ttl);
 		void setDebug(boolean debugState);
 		
+		
 		boolean checkSenderAddr(byte addr[]);
 		boolean checkRecipientAddr(byte addr[]);
 
@@ -77,6 +78,8 @@ class HHAProtocol {
 		void parse(byte *data);
 		
 		byte* getPacket();
+		byte* getRecipientAddr();
+		byte* getSenderAddr();
 		
 		void encrypt();
 		void decrypt();

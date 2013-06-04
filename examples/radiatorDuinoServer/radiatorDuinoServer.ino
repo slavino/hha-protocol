@@ -38,7 +38,7 @@ void setup(){
   
   Mirf.setRADDR((byte *)"clie1");
    
-  Mirf.payload = 32;//sizeof(unsigned long);
+  Mirf.payload = 32;
   Mirf.channel = 10;
 
   Mirf.config();
@@ -67,35 +67,40 @@ void loop(){
                                0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
                                
     HHAProtocol *hhaProtocol = new HHAProtocol(hhaAddress, hhaAddress, hhaInformation);
-    hhaProtocol->setDebug(false);
+    hhaProtocol->setDebug(true);
     
     hhaProtocol->parse(data);
 
     if(hhaProtocol->checkRecipientAddr(hhaAddress)) {
-      //YES them message os for this client
-      
-      hhaProtocol->decrypt();
-      
-      byte* dataX;      
-      dataX = hhaProtocol->getPacket();
-      Serial.println("DECRYPTED PACKET:");
-      for(int i = 0 ; i < 32 ; i ++) {
-        Serial.print(dataX[i], HEX);
-        Serial.print(",");
-      }
-      Serial.println();  
-      
-      delayMicroseconds(random(10,40));
+		
+		//YES the message is for this client
+		hhaProtocol->decrypt();
 
-      Mirf.setTADDR((byte *)"clie1");
-      Mirf.send((byte *)"ACK");
+		byte* dataX;      
+		dataX = hhaProtocol->getPacket();
+		Serial.print("### DECRYPTED PACKET:");
+		for(int i = 0 ; i < 32 ; i ++) {
+			Serial.print(dataX[i], HEX);
+			Serial.print(",");
+		}
+		Serial.println();  
 
-      while(Mirf.isSending()){
-      }
+		delayMicroseconds(random(10,40));
 
-      //CLEANUP
-      delete(dataX);
-      dataX = NULL;
+		hhaProtocol->setRecipientAddr((byte *)hhaProtocol->getSenderAddr());
+		hhaProtocol->setSenderAddr(hhaAddress);
+		hhaProtocol->setInformation((byte *)"ACK1234567890123");
+		hhaProtocol->encrypt();
+
+		Mirf.setTADDR((byte *)"clie1");
+		Mirf.send(hhaProtocol->getPacket());
+
+		while(Mirf.isSending()){
+		}
+
+		//CLEANUP
+		delete(dataX);
+		dataX = NULL;
 
     } else {
       //NO them message is for another client
