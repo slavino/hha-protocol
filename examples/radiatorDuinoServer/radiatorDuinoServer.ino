@@ -85,7 +85,7 @@ void loop(){
       }
       Serial.println();  
       
-      delayMicroseconds(13);
+      delayMicroseconds(random(10,40));
 
       Mirf.setTADDR((byte *)"clie1");
       Mirf.send((byte *)"ACK");
