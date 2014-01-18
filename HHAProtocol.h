@@ -55,7 +55,7 @@ AES 128 Encrypter - online check tool -- http://testprotect.com/appendix/AEScalc
 #include <WProgram.h>
 #endif
 
-#include "AES128.h"
+#include "AESLib.h"
 
 class HHAProtocol {
 	

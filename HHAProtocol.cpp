@@ -14,7 +14,7 @@ byte key[] = {
   0xa1, 0xc1, 0x0a, 0x77, 0xa1, 0xfa, 0xac, 0xa7, 
   0xa5, 0xb9, 0xac, 0xb1, 0x11, 0x07, 0xea, 0xfa 
 };
-AES128 aes(key);
+//AES128 aes(key);
 
 const uint8_t TTL = 4;
 const uint8_t PACKET_SIZE = 32;
@@ -224,7 +224,8 @@ void HHAProtocol::encrypt() {
 		plainData[i-16] = this->_packet[i];
 	}
 	
-	aes.encrypt(plainData);
+	//aes.encrypt(plainData);
+	aes128_enc_single(key, plainData);
 	
 	for(int i = 16 ; i < PACKET_SIZE ; i++ ) {
 		this->_packet[i] = plainData[i-16];
@@ -249,7 +250,8 @@ void HHAProtocol::decrypt() {
 		encryptedData[i-16] = this->_packet[i];
 	}
 	
-	aes.decrypt(encryptedData);
+	//aes.decrypt(encryptedData);
+	aes128_dec_single(key, encryptedData);
 	
 	for(int i = 16 ; i < PACKET_SIZE ; i++ ) {
 		this->_packet[i] = encryptedData[i-16];
