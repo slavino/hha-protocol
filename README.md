@@ -17,6 +17,9 @@ Hustaty Home Automation protocol - Arduino library for Wireless NRF24L01 and AES
 AESLib re-used from
 https://github.com/DavyLandman/AESLib
 
+XTEA re-used from
+https://github.com/franksmicro/Arduino/tree/master/libraries/Xtea
+
 Mirf
 https://github.com/aaronds/arduino-nrf24l01.git
 
