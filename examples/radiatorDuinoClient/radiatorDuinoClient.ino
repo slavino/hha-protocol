@@ -14,7 +14,7 @@
 #include <Mirf.h>
 #include <nRF24L01.h>
 #include <MirfHardwareSpiDriver.h>
-#include "AES128.h"
+#include "AESLib.h"
 #include "HHAProtocol.h"
 
 /**
