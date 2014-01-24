@@ -15,6 +15,8 @@ byte key[] = {
   0xa5, 0xb9, 0xac, 0xb1, 0x11, 0x07, 0xea, 0xfa 
 };
 
+byte BROADCAST_ADDR[] = {0xff, 0xff};
+
 const uint8_t TTL = 4;
 const uint8_t PACKET_SIZE = 32;
  
@@ -103,6 +105,12 @@ void HHAProtocol::setDebug(boolean debugState) {
 	this->hhaProtocol_DEBUG = debugState;
 }
 
+/**
+ * Checks if this module is the recipient.
+ *
+ * @param	addr	byte[2] address space
+ * @return	TRUE if the device has same address OR is package was broadcasted
+ */
 boolean HHAProtocol::checkRecipientAddr(byte addr[]) {
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::checkRecipientAddr(addr): [own ");
@@ -115,9 +123,16 @@ boolean HHAProtocol::checkRecipientAddr(byte addr[]) {
 		Serial.print(addr[1], HEX);
 		Serial.println("]");
 	}
-	return (this->_packet[0] == addr[0]) && (this->_packet[1] == addr[1]);
+	return (this->_packet[0] == addr[0]) && (this->_packet[1] == addr[1])
+		|| (this->_packet[0] == BROADCAST_ADDR[0]) && (this->_packet[1] == BROADCAST_ADDR[1]);
 }
 
+/**
+ * Checks if this module is the original sender.
+ *
+ * @param	addr	byte[2] address space
+ * @return	TRUE if the device has same address
+ */
 boolean HHAProtocol::checkSenderAddr(byte addr[]) {
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::checkSenderAddr(addr): [own ");
