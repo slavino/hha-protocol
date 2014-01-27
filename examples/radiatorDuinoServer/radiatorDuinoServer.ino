@@ -66,7 +66,8 @@ void loop(){
     byte hhaInformation[16] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
                                0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
                                
-    HHAProtocol *hhaProtocol = new HHAProtocol(hhaAddress, hhaAddress, hhaInformation);
+    byte senderAddr[2] = {data[2], data[3]};
+    HHAProtocol *hhaProtocol = new HHAProtocol(hhaAddress, senderAddr, hhaInformation);
     hhaProtocol->setDebug(true);
     
     hhaProtocol->parse(data);
