@@ -83,9 +83,12 @@ class HHAProtocol {
 		
 		void encrypt();
 		void decrypt();
+	
 	private:
 		byte _packet[32];
+		byte _key[16];
 		boolean hhaProtocol_DEBUG;
+		void calculateKey();
 	
 };
 
