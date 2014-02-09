@@ -63,11 +63,9 @@ void setup(){
 }
 
 void sendData() {
-  byte data[32];
-  
-  byte recipientHHAAddress[2] = {data[0], data[1]};
-  byte hhaInformation[16] = {data[16], data[17], data[18], data[19], data[20], data[21], data[22], data[23], 
-                             data[24], data[25], data[26], data[27], data[28], data[29], data[30], data[31]};
+  byte recipientHHAAddress[2] = {serialInput[0], serialInput[1]};
+  byte hhaInformation[16] = {serialInput[16], serialInput[17], serialInput[18], serialInput[19], serialInput[20], serialInput[21], serialInput[22], serialInput[23], 
+                             serialInput[24], serialInput[25], serialInput[26], serialInput[27], serialInput[28], serialInput[29], serialInput[30], serialInput[31]};
   HHAProtocol *hhaProtocol = new HHAProtocol(recipientHHAAddress, hhaAddress, hhaInformation);
   hhaProtocol->setDebug(false);
   hhaProtocol->encrypt();
@@ -93,9 +91,9 @@ void loop(){
     //if remote reset command recieved via SERIAL
     if(serialInput[0] == 0xAA
         && serialInput[1] == 0xBB 
-        && serialInput[1] == 0xCC 
-        && serialInput[1] == 0xEE 
-        && serialInput[1] == 0xDD 
+        && serialInput[2] == 0xCC 
+        && serialInput[3] == 0xEE 
+        && serialInput[4] == 0xDD 
         ) {
       resetFunc();
     }
@@ -126,7 +124,7 @@ void loop(){
                                
     byte senderAddr[2] = {data[2], data[3]};
     HHAProtocol *hhaProtocol = new HHAProtocol(hhaAddress, senderAddr, hhaInformation);
-    hhaProtocol->setDebug(true);
+    hhaProtocol->setDebug(false);
     
     hhaProtocol->parse(data);
 
@@ -163,7 +161,7 @@ void loop(){
 		dataX = NULL;
 
     } else {
-      //NO them message is for another client
+      //NO the message is for another client
       //Serial.println("### NOT FOR ME RESENDING ###");  
       Mirf.setTADDR((byte *)"clie1");
     
