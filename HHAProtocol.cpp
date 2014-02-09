@@ -12,11 +12,6 @@
 
 byte BROADCAST_ADDR[] = {0xff, 0xff};
 
-/*byte key[] = { 
-  0xa1, 0xc1, 0x0a, 0x77, 0xa1, 0xfa, 0xac, 0xa7, 
-  0xa5, 0xb9, 0xac, 0xb1, 0x11, 0x07, 0xea, 0xfa 
-};*/
-
 const uint8_t TTL = 4;
 const uint8_t PACKET_SIZE = 32;
 const uint8_t DATA_SIZE = 16;
@@ -25,20 +20,21 @@ const uint8_t KEY_SIZE = 16;
 HHAProtocol::HHAProtocol(byte recipientAddress[], byte senderAddress[], byte information[]) {
 	byte sample[32] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
 					   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-	memcpy(_packet, &sample, PACKET_SIZE);
+
+	if(this->hhaProtocol_DEBUG == NULL) {
+		this->hhaProtocol_DEBUG = false;
+	}
+ 
+    memcpy(_packet, &sample, PACKET_SIZE);
 	this->setSenderAddr(senderAddress);
 	this->setRecipientAddr(recipientAddress);
 	this->setInformation(information);
 	this->setTTL(0x03);
 	
 	this->calculateKey();
-
-	if(this->hhaProtocol_DEBUG == NULL) {
-		this->hhaProtocol_DEBUG = false;
-	}
-
+	
 	if(this->hhaProtocol_DEBUG) {
-		Serial.print("HHAProtocol::HHAProtocol(address,information): Initializing HHAProtocol: [");
+		Serial.print("HHAProtocol::HHAProtocol(recipientAddress, senderAddress,information): Initializing HHAProtocol: [");
 		for(int i = 0 ; i < PACKET_SIZE ; i++) {
 			Serial.print(this->_packet[i]>>4, HEX);
             Serial.print(this->_packet[i]&0x0f, HEX);
@@ -249,7 +245,7 @@ void HHAProtocol::encrypt() {
 	}
 	
 	if(this->hhaProtocol_DEBUG) {
-		Serial.print("HHAProtocol::setInformation(information): setting: [");
+		Serial.print("HHAProtocol::encrypt(): setting: [");
 		for(int i = 0 ; i < PACKET_SIZE ; i++) {
 			Serial.print(this->_packet[i]>>4, HEX);
             Serial.print(this->_packet[i]&0x0f, HEX);
@@ -274,7 +270,7 @@ void HHAProtocol::decrypt() {
 	}
 	
 	if(this->hhaProtocol_DEBUG) {
-		Serial.print("HHAProtocol::setInformation(information): setting: [");
+		Serial.print("HHAProtocol::decrypt(): setting: [");
 		for(int i = 0 ; i < PACKET_SIZE ; i++) {
 			Serial.print(this->_packet[i]>>4, HEX);
             Serial.print(this->_packet[i]&0x0f, HEX);
@@ -286,8 +282,19 @@ void HHAProtocol::decrypt() {
 
 void HHAProtocol::calculateKey() {
 
+	byte key[16] = {0xDA, 0xBB, 0xA1, 0x34, 0x11, 0x23, 0xD1, 0x1F,
+					0xFA, 0xCB, 0x10, 0x4E, 0x04, 0x5E, 0x2F, 0x2A};
+	
 	for(int i = 0 ; i < KEY_SIZE ; i++ ) {
-		this->_key[i] = this->_packet[i%4];
+		if(i % 4 == 0) {
+			this->_key[i] = this->_packet[i%4] & key[i];
+		} else if(i % 4 == 1) {
+			this->_key[i] = this->_packet[i%4] | key[i];
+		} else if(i % 4 == 2) {
+			this->_key[i] = this->_packet[i%4] ^ key[i];
+		} else {
+			this->_key[i] = this->_packet[i%4];
+		}
 	}
 	
 	if(this->hhaProtocol_DEBUG) {
