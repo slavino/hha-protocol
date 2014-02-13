@@ -72,6 +72,9 @@ void sendData() {
   
   Mirf.send(hhaProtocol->getPacket());
   
+  while(Mirf.isSending()){
+  }
+  
   //perform cleanup
   delete(hhaProtocol);
   hhaProtocol = NULL;
