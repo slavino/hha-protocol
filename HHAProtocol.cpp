@@ -12,9 +12,13 @@
 
 byte BROADCAST_ADDR[] = {0xff, 0xff};
 
+// position of TTL byte in the packet
 const uint8_t TTL = 4;
+
 const uint8_t PACKET_SIZE = 32;
+
 const uint8_t DATA_SIZE = 16;
+
 const uint8_t KEY_SIZE = 16;
 
 HHAProtocol::HHAProtocol(byte recipientAddress[], byte senderAddress[], byte information[]) {
@@ -26,6 +30,7 @@ HHAProtocol::HHAProtocol(byte recipientAddress[], byte senderAddress[], byte inf
 	}
  
     memcpy(_packet, &sample, PACKET_SIZE);
+	delete(sample);
 	this->setSenderAddr(senderAddress);
 	this->setRecipientAddr(recipientAddress);
 	this->setInformation(information);
@@ -34,12 +39,15 @@ HHAProtocol::HHAProtocol(byte recipientAddress[], byte senderAddress[], byte inf
 	this->calculateKey();
 	
 	if(this->hhaProtocol_DEBUG) {
-		Serial.print("HHAProtocol::HHAProtocol(recipientAddress, senderAddress,information): Initializing HHAProtocol: [");
-		for(int i = 0 ; i < PACKET_SIZE ; i++) {
+		Serial.print("HHAProtocol::HHAProtocol(recipientAddress, senderAddress, information): Initializing HHAProtocol: [");
+		/*for(int i = 0 ; i < PACKET_SIZE ; i++) {
 			Serial.print(this->_packet[i]>>4, HEX);
             Serial.print(this->_packet[i]&0x0f, HEX);
-			Serial.print(",");
-		}
+			if(i < PACKET_SIZE - 1) {
+				Serial.print(",");
+			}
+		}*/
+		this->printByteArrayToSerial(this->_packet);
 		Serial.println("]");
 	}
 }
@@ -180,11 +188,12 @@ void HHAProtocol::setInformation(byte information[]) {
 	
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::setInformation(information): setting: [");
-		for(int i = 0 ; i < PACKET_SIZE ; i++) {
+		/*for(int i = 0 ; i < PACKET_SIZE ; i++) {
 			Serial.print(this->_packet[i]>>4, HEX);
             Serial.print(this->_packet[i]&0x0f, HEX);
 			Serial.print(",");
-		}
+		}*/
+		this->printByteArrayToSerial(this->_packet);
 		Serial.println("]");
 	}
 }
@@ -193,11 +202,12 @@ void HHAProtocol::parse(byte *data) {
 
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::parse(data): DATA[");
-		for(int i = 0 ; i < PACKET_SIZE ; i++) {
+		/*for(int i = 0 ; i < PACKET_SIZE ; i++) {
 			Serial.print(data[i]>>4, HEX);
             Serial.print(data[i]&0x0f, HEX);
 			Serial.print(",");
-		}
+		}*/
+		this->printByteArrayToSerial(this->_packet);
 		Serial.println("]");
 	}
 
@@ -207,11 +217,12 @@ void HHAProtocol::parse(byte *data) {
 	
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::parse(data): [");
-		for(int i = 0 ; i < PACKET_SIZE ; i++) {
+		/*for(int i = 0 ; i < PACKET_SIZE ; i++) {
 			Serial.print(this->_packet[i]>>4, HEX);
             Serial.print(this->_packet[i]&0x0f, HEX);
 			Serial.print(",");
-		}
+		}*/
+		this->printByteArrayToSerial(this->_packet);
 		Serial.println("]");
 	}
 }
@@ -220,11 +231,12 @@ byte* HHAProtocol::getPacket() {
 
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::getPacket(): [");
-		for(int i = 0 ; i < PACKET_SIZE ; i++) {
+		/*for(int i = 0 ; i < PACKET_SIZE ; i++) {
 			Serial.print(this->_packet[i]>>4, HEX);
             Serial.print(this->_packet[i]&0x0f, HEX);
 			Serial.print(",");
-		}
+		}*/
+		this->printByteArrayToSerial(this->_packet);
 		Serial.println("]");
 	}
 
@@ -246,11 +258,12 @@ void HHAProtocol::encrypt() {
 	
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::encrypt(): setting: [");
-		for(int i = 0 ; i < PACKET_SIZE ; i++) {
+		/*for(int i = 0 ; i < PACKET_SIZE ; i++) {
 			Serial.print(this->_packet[i]>>4, HEX);
             Serial.print(this->_packet[i]&0x0f, HEX);
 			Serial.print(",");
-		}
+		}*/
+		this->printByteArrayToSerial(this->_packet);
 		Serial.println("]");
 	}
 
@@ -271,11 +284,12 @@ void HHAProtocol::decrypt() {
 	
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::decrypt(): setting: [");
-		for(int i = 0 ; i < PACKET_SIZE ; i++) {
+		/*for(int i = 0 ; i < PACKET_SIZE ; i++) {
 			Serial.print(this->_packet[i]>>4, HEX);
             Serial.print(this->_packet[i]&0x0f, HEX);
 			Serial.print(",");
-		}
+		}*/
+		this->printByteArrayToSerial(this->_packet);
 		Serial.println("]");
 	}
 }
@@ -299,13 +313,23 @@ void HHAProtocol::calculateKey() {
 	
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::calculateKey(): Key is: [");
-		for(int i = 0 ; i < KEY_SIZE ; i++) {
+		/*for(int i = 0 ; i < KEY_SIZE ; i++) {
 			Serial.print(this->_key[i]>>4, HEX);
             Serial.print(this->_key[i]&0x0f, HEX);
 			Serial.print(",");
-		}
+		}*/
+		this->printByteArrayToSerial(this->_key);
 		Serial.println("]");
 	}
-
 }
-	
+
+void HHAProtocol::printByteArrayToSerial(byte bytearray[]) {
+	int length = sizeof(bytearray);
+	for(int i = 0 ; i < length ; i++) {
+		Serial.print(this->_key[i]>>4, HEX);
+		Serial.print(this->_key[i]&0x0f, HEX);
+		if(i < length - 1) {
+			Serial.print(",");
+		}
+	}
+}

@@ -89,7 +89,7 @@ class HHAProtocol {
 		byte _key[16];
 		boolean hhaProtocol_DEBUG;
 		void calculateKey();
-	
+		void printByteArrayToSerial(byte array[]);
 };
 
 #endif /* _HHAPROTOCOL_H_ */
