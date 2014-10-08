@@ -28,7 +28,7 @@
 |-----------------------------------------------------------------------------------------------------------------------------------------------------|
 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------|
-|RecAddr|SndAddr|TTL| Unused                                          | AES 128 encrypted data                                                        |
+|RecAddr|SndAddr|TTL|Enc| Unused                                      | DATA                                                                          |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------|
 
 * Recipient address [bytes on position 0,1]
@@ -39,10 +39,14 @@
 
 * TTL [byte on position 4]
 
-* AES 128 Encrypted data [bytes on position 16-31]
+* Enc - encryption used enumeration - 
+	0x00 none/plain data sent over the air
+	0x01 AES128
+	
+* Encrypted or plain data [bytes on position 16-31]
 	allows 16byte messages
 
-AES 128 Encrypter - online check tool -- http://testprotect.com/appendix/AEScalc
+* AES 128 Encrypter - online check tool -- http://testprotect.com/appendix/AEScalc
 
 */
 
@@ -67,12 +71,14 @@ class HHAProtocol {
 		void setTTL(byte ttl);
 		void setDebug(boolean debugState);
 		
-		
 		boolean checkSenderAddr(byte addr[]);
 		boolean checkRecipientAddr(byte addr[]);
 
 		void decreaseTTL();
 		byte getTTL();
+		
+		byte getEncryptionMethod();
+
 		void setInformation(byte information[]);
 
 		void parse(byte *data);
@@ -81,12 +87,17 @@ class HHAProtocol {
 		byte* getRecipientAddr();
 		byte* getSenderAddr();
 		
+		
+	private:
+
 		void encrypt();
 		void decrypt();
 	
-	private:
 		byte _packet[32];
 		byte _key[16];
+
+		void setEncryption(byte encryption);
+		
 		boolean hhaProtocol_DEBUG;
 		void calculateKey();
 		void printByteArrayToSerial(byte array[]);

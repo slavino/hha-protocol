@@ -90,7 +90,7 @@ void loop(void) {
       
       HHAProtocol *hhaProtocol = new HHAProtocol(hhaRecipientAddress, hhaAddress, hhaInformation);
       hhaProtocol->setDebug(false);
-      hhaProtocol->encrypt();
+      //hhaProtocol->encrypt();
     
       byte *dataPacket;
       memcpy(dataPacket,hhaProtocol->getPacket(),32);

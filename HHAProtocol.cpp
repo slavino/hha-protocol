@@ -14,6 +14,7 @@ byte BROADCAST_ADDR[] = {0xff, 0xff};
 
 // position of TTL byte in the packet
 const uint8_t TTL = 4;
+const uint8_t ENCRYPTION_TYPE = 5;
 
 const uint8_t PACKET_SIZE = 32;
 
@@ -21,8 +22,11 @@ const uint8_t DATA_SIZE = 16;
 
 const uint8_t KEY_SIZE = 16;
 
+const byte ENCRYPTION_AES = 0x01;
+const byte ENCRYPTION_NONE = 0x00;
+
 HHAProtocol::HHAProtocol(byte recipientAddress[], byte senderAddress[], byte information[]) {
-	byte sample[32] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+	byte sample[32] = {0xff, 0xff, 0xff, 0xff, 0xff, ENCRYPTION_NONE, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
 					   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 	if(this->hhaProtocol_DEBUG == NULL) {
@@ -40,13 +44,6 @@ HHAProtocol::HHAProtocol(byte recipientAddress[], byte senderAddress[], byte inf
 	
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::HHAProtocol(recipientAddress, senderAddress, information): Initializing HHAProtocol: [");
-		/*for(int i = 0 ; i < PACKET_SIZE ; i++) {
-			Serial.print(this->_packet[i]>>4, HEX);
-            Serial.print(this->_packet[i]&0x0f, HEX);
-			if(i < PACKET_SIZE - 1) {
-				Serial.print(",");
-			}
-		}*/
 		this->printByteArrayToSerial(this->_packet);
 		Serial.println("]");
 	}
@@ -174,39 +171,36 @@ void HHAProtocol::setInformation(byte information[]) {
 
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::setInformation(information): information: [");
-		for(int i = 0 ; i < DATA_SIZE ; i++) {
-			Serial.print(information[i]>>4, HEX);
-            Serial.print(information[i]&0x0f, HEX);
-			Serial.print(",");
-		}
+		this->printByteArrayToSerial(information);
 		Serial.println("]");
 	}
-
+	
+	if(ENCRYPTION_NONE != this->getEncryptionMethod()) {
+		return;
+	}
+	
 	for(int i = DATA_SIZE ; i < PACKET_SIZE ; i++ ) {
 		this->_packet[i] = information[i-DATA_SIZE];
 	}
 	
+	this->encrypt();
+	
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::setInformation(information): setting: [");
-		/*for(int i = 0 ; i < PACKET_SIZE ; i++) {
-			Serial.print(this->_packet[i]>>4, HEX);
-            Serial.print(this->_packet[i]&0x0f, HEX);
-			Serial.print(",");
-		}*/
 		this->printByteArrayToSerial(this->_packet);
 		Serial.println("]");
 	}
+}
+
+
+byte HHAProtocol::getEncryptionMethod() {
+	return this->_packet[ENCRYPTION_TYPE];
 }
 
 void HHAProtocol::parse(byte *data) {
 
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::parse(data): DATA[");
-		/*for(int i = 0 ; i < PACKET_SIZE ; i++) {
-			Serial.print(data[i]>>4, HEX);
-            Serial.print(data[i]&0x0f, HEX);
-			Serial.print(",");
-		}*/
 		this->printByteArrayToSerial(this->_packet);
 		Serial.println("]");
 	}
@@ -217,11 +211,6 @@ void HHAProtocol::parse(byte *data) {
 	
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::parse(data): [");
-		/*for(int i = 0 ; i < PACKET_SIZE ; i++) {
-			Serial.print(this->_packet[i]>>4, HEX);
-            Serial.print(this->_packet[i]&0x0f, HEX);
-			Serial.print(",");
-		}*/
 		this->printByteArrayToSerial(this->_packet);
 		Serial.println("]");
 	}
@@ -231,16 +220,17 @@ byte* HHAProtocol::getPacket() {
 
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::getPacket(): [");
-		/*for(int i = 0 ; i < PACKET_SIZE ; i++) {
-			Serial.print(this->_packet[i]>>4, HEX);
-            Serial.print(this->_packet[i]&0x0f, HEX);
-			Serial.print(",");
-		}*/
 		this->printByteArrayToSerial(this->_packet);
 		Serial.println("]");
 	}
 
+	this->decrypt();
+	
 	return (byte *)&this->_packet;
+}
+
+void HHAProtocol::setEncryption(byte encryption) {
+	this->_packet[ENCRYPTION_TYPE] = encryption;
 }
 
 void HHAProtocol::encrypt() {
@@ -256,13 +246,10 @@ void HHAProtocol::encrypt() {
 		this->_packet[i] = plainData[i-DATA_SIZE];
 	}
 	
+	this->setEncryption(ENCRYPTION_AES);
+	
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::encrypt(): setting: [");
-		/*for(int i = 0 ; i < PACKET_SIZE ; i++) {
-			Serial.print(this->_packet[i]>>4, HEX);
-            Serial.print(this->_packet[i]&0x0f, HEX);
-			Serial.print(",");
-		}*/
 		this->printByteArrayToSerial(this->_packet);
 		Serial.println("]");
 	}
@@ -271,6 +258,10 @@ void HHAProtocol::encrypt() {
 
 void HHAProtocol::decrypt() {
 	byte encryptedData[DATA_SIZE];
+	
+	if(ENCRYPTION_AES != this->getEncryptionMethod()) {
+		return;
+	}
 	
 	for(int i = DATA_SIZE ; i < PACKET_SIZE ; i++ ) {
 		encryptedData[i-DATA_SIZE] = this->_packet[i];
@@ -281,14 +272,11 @@ void HHAProtocol::decrypt() {
 	for(int i = DATA_SIZE ; i < PACKET_SIZE ; i++ ) {
 		this->_packet[i] = encryptedData[i-DATA_SIZE];
 	}
+
+	this->setEncryption(ENCRYPTION_NONE);
 	
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::decrypt(): setting: [");
-		/*for(int i = 0 ; i < PACKET_SIZE ; i++) {
-			Serial.print(this->_packet[i]>>4, HEX);
-            Serial.print(this->_packet[i]&0x0f, HEX);
-			Serial.print(",");
-		}*/
 		this->printByteArrayToSerial(this->_packet);
 		Serial.println("]");
 	}
@@ -313,11 +301,6 @@ void HHAProtocol::calculateKey() {
 	
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::calculateKey(): Key is: [");
-		/*for(int i = 0 ; i < KEY_SIZE ; i++) {
-			Serial.print(this->_key[i]>>4, HEX);
-            Serial.print(this->_key[i]&0x0f, HEX);
-			Serial.print(",");
-		}*/
 		this->printByteArrayToSerial(this->_key);
 		Serial.println("]");
 	}
