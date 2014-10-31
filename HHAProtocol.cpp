@@ -14,6 +14,8 @@ byte BROADCAST_ADDR[] = {0xff, 0xff};
 
 // position of TTL byte in the packet
 const uint8_t TTL = 4;
+
+// position of ENCRYPTION byte in the packet
 const uint8_t ENCRYPTION_TYPE = 5;
 
 const uint8_t PACKET_SIZE = 32;
