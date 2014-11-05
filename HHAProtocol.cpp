@@ -40,11 +40,14 @@ HHAProtocol::HHAProtocol(byte recipientAddress[], byte senderAddress[], byte inf
 	delete(sample);
 	this->setSenderAddr(senderAddress);
 	this->setRecipientAddr(recipientAddress);
+
+	//calculated only from sndr and rcpt address
+	this->calculateKey();
+
 	this->setInformation(information); //and encrypt it
 	
 	this->setTTL(0x03);
 	
-	this->calculateKey();
 	
 	if(this->hhaProtocol_DEBUG) {
 		Serial.print("HHAProtocol::HHAProtocol(recipientAddress, senderAddress, information): Initializing HHAProtocol: [");
