@@ -24,6 +24,7 @@ const uint8_t DATA_SIZE = 16;
 
 const uint8_t KEY_SIZE = 16;
 
+//encryption types enumeration
 const byte ENCRYPTION_AES = 0x01;
 const byte ENCRYPTION_NONE = 0x00;
 
@@ -39,7 +40,8 @@ HHAProtocol::HHAProtocol(byte recipientAddress[], byte senderAddress[], byte inf
 	delete(sample);
 	this->setSenderAddr(senderAddress);
 	this->setRecipientAddr(recipientAddress);
-	this->setInformation(information);
+	this->setInformation(information); //and encrypt it
+	
 	this->setTTL(0x03);
 	
 	this->calculateKey();
@@ -164,7 +166,7 @@ byte HHAProtocol::getTTL() {
 }
 
 void HHAProtocol::decreaseTTL() {
-	if(this->_packet[TTL] != 0x00) {
+	if(this->_packet[TTL] > 0x00) {
 		this->_packet[TTL]--;
 	}
 }
@@ -176,15 +178,15 @@ void HHAProtocol::setInformation(byte information[]) {
 		this->printByteArrayToSerial(information);
 		Serial.println("]");
 	}
-	
-	if(ENCRYPTION_NONE != this->getEncryptionMethod()) {
-		return;
-	}
-	
+		
 	for(int i = DATA_SIZE ; i < PACKET_SIZE ; i++ ) {
 		this->_packet[i] = information[i-DATA_SIZE];
 	}
-	
+
+	if(ENCRYPTION_NONE != this->getEncryptionMethod()) {
+		return;
+	}
+
 	this->encrypt();
 	
 	if(this->hhaProtocol_DEBUG) {
