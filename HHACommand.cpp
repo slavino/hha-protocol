@@ -10,14 +10,14 @@
 
 #include "HHACommand.h"
 
-const byte CMD_GET_SWVERSION    = 0x00; //get - version of command set
-const byte CMD_GET_TEMPERATURE  = 0x01; //get - get temperature(s)
-const byte CMD_GET_SWITCH       = 0x02; //get - digital pins on relays
-const byte CMD_SET_SWITCH       = 0x03; //set - digital pins on relays
-const byte CMD_GET_TIME         = 0x04; //get,set - get/set time on RTC
-const byte CMD_SET_TIME         = 0x05; //get,set - get/set time on RTC
-const byte CMD_GET_UPTIME       = 0x06; //get - CPU millis , useful if RTC not present
-const byte CMD_RESET            = 0xFF; //set - force reboot
+const byte CMD_GET_SWVERSION    = 0x00; //#1 get - version of command set
+const byte CMD_GET_TEMPERATURE  = 0x01; //#2 get - get temperature(s)
+const byte CMD_GET_SWITCH       = 0x02; //#3 get - digital pins on relays
+const byte CMD_SET_SWITCH       = 0x03; //#4 set - digital pins on relays
+const byte CMD_GET_TIME         = 0x04; //#5 get - get time on RTC
+const byte CMD_SET_TIME         = 0x05; //#6 set - set time on RTC
+const byte CMD_GET_UPTIME       = 0x06; //#7 get - CPU millis, useful if RTC not present
+const byte CMD_RESET            = 0xFF; //#8 set - force reboot
 
 const uint_8 CMD_COUNT = 8;
 
