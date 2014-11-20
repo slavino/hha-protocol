@@ -10,16 +10,18 @@
 
 #include "HHACommand.h"
 
-const byte CMD_GET_SWVERSION    = 0x00; //#1 get - version of command set
-const byte CMD_GET_TEMPERATURE  = 0x01; //#2 get - get temperature(s)
-const byte CMD_GET_SWITCH       = 0x02; //#3 get - digital pins on relays
-const byte CMD_SET_SWITCH       = 0x03; //#4 set - digital pins on relays
-const byte CMD_GET_TIME         = 0x04; //#5 get - get time on RTC
-const byte CMD_SET_TIME         = 0x05; //#6 set - set time on RTC
-const byte CMD_GET_UPTIME       = 0x06; //#7 get - CPU millis, useful if RTC not present
-const byte CMD_RESET            = 0xFF; //#8 set - force reboot
+const byte CMD_GET_SWVERSION        = 0x00; //#01 get - version of command set
+const byte CMD_GET_TEMPERATURE      = 0x01; //#02 get - get temperature(s)
+const byte CMD_GET_SWITCH           = 0x02; //#03 get - digital pins on relays
+const byte CMD_SET_SWITCH           = 0x03; //#04 set - digital pins on relays
+const byte CMD_GET_TIME             = 0x04; //#05 get - get time on RTC
+const byte CMD_SET_TIME             = 0x05; //#06 set - set time on RTC
+const byte CMD_GET_UPTIME           = 0x06; //#07 get - CPU millis, useful if RTC not present
+const byte CMD_GET_DISPLAYTYPE      = 0x07; //#08 get - get display type attached to device
+const byte CMD_SET_DISPLAYMESSAGE   = 0x08; //#09 set - message
+const byte CMD_RESET                = 0xFF; //#10 set - force reboot
 
-const uint_8 CMD_COUNT = 8;
+const uint_8 CMD_COUNT = 10;
 
 const byte SUPPORTED_CMD_SET[CMD_COUNT] = {
             CMD_GET_SWVERSION,
@@ -29,6 +31,8 @@ const byte SUPPORTED_CMD_SET[CMD_COUNT] = {
             CMD_GET_TIME,
             CMD_SET_TIME,
             CMD_GET_UPTIME,
+            CMD_GET_DISPLAYTYPE,
+            CMD_SET_DISPLAYMESSAGE,
             CMD_RESET
             };
 
