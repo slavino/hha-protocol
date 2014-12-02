@@ -289,6 +289,13 @@ void HHAProtocol::decrypt() {
 	}
 }
 
+/**
+* Sets the key for for encryption of data.
+*/
+void setKey(byte key[]) {
+	memcpy(this->_key, &key, KEY_SIZE);
+}
+
 void HHAProtocol::calculateKey() {
 
 	byte key[16] = {0xDA, 0xBB, 0xA1, 0x34, 0x11, 0x23, 0xD1, 0x1F,

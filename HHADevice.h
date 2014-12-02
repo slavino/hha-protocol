@@ -33,6 +33,8 @@ $Id$
 #include <WProgram.h>
 #endif
 
+#include "HHAProtocol.h"
+
 class HHADevice {
 
 public:
@@ -40,6 +42,8 @@ public:
 
 private:
     boolean hhaDevice_DEBUG;
+
+    byte deviceAddress[2];
 
 };
 

@@ -86,7 +86,8 @@ class HHAProtocol {
 		byte* getPacket();
 		byte* getRecipientAddr();
 		byte* getSenderAddr();
-		
+
+		void setKey(byte key[]);
 		
 	private:
 
